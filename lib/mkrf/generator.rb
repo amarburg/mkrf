@@ -72,6 +72,7 @@ module Mkrf
     
     def initialize(extension_name, source_patterns = ["*.c"], availability_options = {})
       @sources = source_patterns
+      @extension_sym = extension_name.to_sym
       @extension_name = extension_name + ".#{CONFIG['DLEXT']}"
       @available = Mkrf::Availability.new(availability_options)
       @defines = []
@@ -197,7 +198,9 @@ CFLAGS = "#{cflags} #{defines_compile_string}"
 RUBYARCHDIR = "\#{ENV["RUBYARCHDIR"]}"
 LIBRUBYARG_SHARED = "#{CONFIG['LIBRUBYARG_SHARED']}"
 
-task :default => ['#{@extension_name}']
+task :default => #{@extension_sym}
+
+task #{@extension_sym} => ['#{@extension_name}', :Rakefile ]
 
 rule '.#{objext}' => '.#{@source_extension}' do |t|
   sh "\#{CC} \#{CFLAGS} \#{INCLUDES} -o \#{t.name} -c \#{t.source}"
@@ -206,6 +209,11 @@ end
 desc "Build this extension"
 file '#{@extension_name}' => [OBJ, '#{__FILE__}' ] do
   sh "\#{LDSHARED} \#{LIBPATH} #{@available.ld_outfile(@extension_name)} \#{OBJ} \#{ADDITIONAL_OBJECTS} \#{LIBS} \#{LIBRUBYARG_SHARED}"
+end
+
+desc "Rebuild rakefile"
+file 'Rakefile' => 'mkrf_conf.rb' do |t|
+  ruby t.source
 end
 
 desc "Install this extension"
