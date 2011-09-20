@@ -200,7 +200,7 @@ LIBRUBYARG_SHARED = "#{CONFIG['LIBRUBYARG_SHARED']}"
 
 task :default => :#{@extension_sym}
 
-task :#{@extension_sym} => ['#{@extension_name}', 'Rakefile' ]
+task :#{@extension_sym} => ['Rakefile','#{@extension_name}']
 
 rule '.#{objext}' => '.#{@source_extension}' do |t|
   sh "\#{CC} \#{CFLAGS} \#{INCLUDES} -o \#{t.name} -c \#{t.source}"
@@ -213,7 +213,7 @@ end
 
 desc "Rebuild rakefile"
 file 'Rakefile' => 'mkrf_conf.rb' do |t|
-  ruby \#{t.source}
+  ruby mkrf_conf.rb
 end
 
 desc "Install this extension"
