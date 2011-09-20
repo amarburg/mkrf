@@ -213,7 +213,7 @@ end
 
 desc "Rebuild rakefile"
 file 'Rakefile' => 'mkrf_conf.rb' do |t|
-  ruby mkrf_conf.rb
+  ruby 'mkrf_conf.rb'
 end
 
 desc "Install this extension"
