@@ -200,7 +200,7 @@ LIBRUBYARG_SHARED = "#{CONFIG['LIBRUBYARG_SHARED']}"
 task :default => ['#{@extension_name}']
 
 rule '.#{objext}' => '.#{@source_extension}' do |t|
-  sh "\#{CC} \#{CFLAGS} \#{INCLUDES} -c \#{t.source}"
+  sh "\#{CC} \#{CFLAGS} \#{INCLUDES} -o \#{t.name} -c \#{t.source}"
 end
 
 desc "Build this extension"
