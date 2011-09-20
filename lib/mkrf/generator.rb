@@ -181,8 +181,8 @@ CLOBBER.include('#{@extension_name}', 'mkrf.log')
 
 SRC = FileList[#{sources.join(',')}]
 OBJ = SRC.ext('#{objext}')
-CC = '#{@cc}'
-CPP = '#{@cc}'
+CC = 'gcc'
+CPP = 'g++'
 
 ADDITIONAL_OBJECTS = '#{objects}'
 
