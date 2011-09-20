@@ -198,9 +198,9 @@ CFLAGS = "#{cflags} #{defines_compile_string}"
 RUBYARCHDIR = "\#{ENV["RUBYARCHDIR"]}"
 LIBRUBYARG_SHARED = "#{CONFIG['LIBRUBYARG_SHARED']}"
 
-task :default => #{@extension_sym}
+task :default => :#{@extension_sym}
 
-task #{@extension_sym} => ['#{@extension_name}', :Rakefile ]
+task :#{@extension_sym} => ['#{@extension_name}', 'Rakefile' ]
 
 rule '.#{objext}' => '.#{@source_extension}' do |t|
   sh "\#{CC} \#{CFLAGS} \#{INCLUDES} -o \#{t.name} -c \#{t.source}"
