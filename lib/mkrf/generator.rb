@@ -80,7 +80,7 @@ module Mkrf
         @cc = 'g++' # should be in CONFIG['C++'] but is not.
         @source_extension = 'cpp'
       else
-        @cc = CONFIG['CC']
+        @cc = CONFIG['CC'] || 'gcc'
         @source_extension = 'c'
       end
       
@@ -182,6 +182,7 @@ CLOBBER.include('#{@extension_name}', 'mkrf.log')
 SRC = FileList[#{sources.join(',')}]
 OBJ = SRC.ext('#{objext}')
 CC = '#{@cc}'
+CPP = '#{@cc}'
 
 ADDITIONAL_OBJECTS = '#{objects}'
 
@@ -202,8 +203,12 @@ task :default => :#{@extension_sym}
 
 task :#{@extension_sym} => ['Rakefile','#{@extension_name}']
 
-rule '.#{objext}' => '.#{@source_extension}' do |t|
+rule '.#{objext}' => '.c' do |t|
   sh "\#{CC} \#{CFLAGS} \#{INCLUDES} -o \#{t.name} -c \#{t.source}"
+end
+
+rule '.#{objext}' => '.cpp' do |t|
+  sh "\#{CPP} \#{CFLAGS} \#{INCLUDES} -o \#{t.name} -c \#{t.source}"
 end
 
 desc "Build this extension"
