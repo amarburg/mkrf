@@ -207,7 +207,7 @@ rule '.#{objext}' => '.#{@source_extension}' do |t|
 end
 
 desc "Build this extension"
-file '#{@extension_name}' => [OBJ, '#{__FILE__}' ] do
+file '#{@extension_name}' => #{OBJ} do
   sh "\#{LDSHARED} \#{LIBPATH} #{@available.ld_outfile(@extension_name)} \#{OBJ} \#{ADDITIONAL_OBJECTS} \#{LIBS} \#{LIBRUBYARG_SHARED}"
 end
 
