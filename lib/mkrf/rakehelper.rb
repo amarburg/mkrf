@@ -82,7 +82,7 @@ def setup_extension(dir, extension)
   end
 
   file ext_so => ext_files do
-    rake "#{ext}"
+    rake "#{ext_dir}"
     cp ext_so, "lib"
   end
 
