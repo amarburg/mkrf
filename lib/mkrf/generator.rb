@@ -41,7 +41,7 @@ module Mkrf
   class Generator
     include Rake
     
-    CONFIG = Config::CONFIG
+    CONFIG = RbConfig::CONFIG
     
     # Any extra code, given as a string, to be appended to the Rakefile.
     attr_accessor :additional_code
