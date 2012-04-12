@@ -58,7 +58,7 @@ end
 
 def setup_extension(dir, extension)
   ext_dir = "ext/#{dir}"
-  ext_so = "#{ext_dir}/#{extension}.#{Config::CONFIG['DLEXT']}"
+  ext_so = "#{ext_dir}/#{extension}.#{RbConfig::CONFIG['DLEXT']}"
 
   ext_files = FileList[
     "#{ext_dir}/**/*.c*",
@@ -95,7 +95,7 @@ def setup_extension(dir, extension)
 
     desc "Run \"rake clobber\" in #{ext_dir}"
     task :clobber do
-      rake extd_dir, 'clobber'
+      rake ext_dir, 'clobber'
     end
   end
 
