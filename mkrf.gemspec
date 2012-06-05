@@ -16,8 +16,6 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.rdoc_options << '--main' << 'README' << '--title' << 'mkrf'
-#  s.autorequire = 'mkrf'
-
   s.extra_rdoc_files = [ "README", "MIT-LICENSE", "CHANGELOG" ]
 
   s.files = [ "Rakefile", "README", "CHANGELOG", "MIT-LICENSE" ]
@@ -28,7 +26,7 @@ Gem::Specification.new do |s|
 #  s.extensions    = FileList["ext/**/mkrf_conf.rb"]
 #  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
 #  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  #s.require_paths = ["lib"]
+  s.require_paths = "lib"
 
   s.add_dependency "rake"
 
