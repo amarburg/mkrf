@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.rdoc_options << '--main' << 'README' << '--title' << 'mkrf'
-  s.autorequire = 'mkrf'
+#  s.autorequire = 'mkrf'
 
   s.extra_rdoc_files = [ "README", "MIT-LICENSE", "CHANGELOG" ]
 
