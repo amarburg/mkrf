@@ -41,7 +41,7 @@ end
 
 def setup_extension(dir, extension)
   ext = "ext/#{dir}"
-  ext_so = "#{ext}/#{extension}.#{Config::CONFIG['DLEXT']}"
+  ext_so = "#{ext}/#{extension}.#{RbConfig::CONFIG['DLEXT']}"
   ext_files = FileList[
     "#{ext}/*.c",
     "#{ext}/*.h",
