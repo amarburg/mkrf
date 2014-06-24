@@ -61,7 +61,10 @@ module Mkrf
     # (which is used to build the shared library).
     attr_accessor :ldshared
 
-    
+    # Should the object files be built using multitask
+    attr_accessor :parallelize
+
+    def parallelize!; @parallelize = true; end
     
     # Create a +Generator+ object which writes a Rakefile to the current directory of the local
     # filesystem.
@@ -83,6 +86,8 @@ module Mkrf
         @cc = CONFIG['CC'] || 'gcc'
         @source_extension = 'c'
       end
+
+      @parallellize = false
       
       @objects  = ''
       @ldshared = ''
@@ -214,9 +219,11 @@ rule '.#{objext}' => '.cpp' do |t|
 end
 
 desc "Build this extension"
-file '#{@extension_name}' => OBJ do
+file '#{@extension_name}' => :obj do
   sh "\#{LDSHARED} \#{LIBPATH} #{@available.ld_outfile(@extension_name)} \#{OBJ} \#{ADDITIONAL_OBJECTS} \#{LIBS} \#{LIBRUBYARG_SHARED}"
 end
+
+#{parallelize ? 'multitask' : 'task'} :obj => OBJ
 
 desc "Rebuild rakefile"
 file 'Rakefile' => 'mkrf_conf.rb' do |t|
