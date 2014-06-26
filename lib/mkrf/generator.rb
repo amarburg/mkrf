@@ -63,8 +63,11 @@ module Mkrf
 
     # Should the object files be built using multitask
     attr_accessor :parallelize
-
     def parallelize!; @parallelize = true; end
+
+    attr_accessor :makedepends
+    def makedepends!; @makedepends = true; end
+    alias_method :makedepends?, :makedepends
     
     # Create a +Generator+ object which writes a Rakefile to the current directory of the local
     # filesystem.
@@ -88,10 +91,12 @@ module Mkrf
       end
 
       @parallellize = false
+      @makedepends = false
       
       @objects  = ''
       @ldshared = ''
       @cflags   = "#{CONFIG['CCDLFLAGS']} #{CONFIG['CFLAGS']} #{CONFIG['ARCH_FLAG']}"
+      @depext = '.dep'
       
       yield self if block_given?
       write_rakefile
@@ -174,6 +179,39 @@ module Mkrf
       end
     end
 
+    def makedepend_block
+      if makedepends
+
+        <<-END_MAKEDEPEND_BLOCK
+task :depends => DEPS
+
+includes_from_cflags = CFLAGS.split(' ').select {|s| s.match(/^-I/) }.join(' ')
+mkdep_includes = [INCLUDES, includes_from_cflags].join(' ')
+
+rule '#{@depext}' => '.cpp' do |t|
+  sh "gcc \#{mkdep_includes} -MM -MF \#{t.name} \#{t.source}"
+  Rake::MakefileLoader.new.load(t.name) if File.file?(t.name)
+end
+
+rule '#{@depext}' => '.c' do |t|
+  sh "gcc \#{mkdep_includes} -MM -MF \#{t.name} \#{t.source}"
+  Rake::MakefileLoader.new.load(t.name) if File.file?(t.name)
+end
+
+DEPS.each { |dep|
+  Rake::MakefileLoader.new.load(dep) if File.file?(dep)
+}
+
+CLEAN.include DEPS
+        END_MAKEDEPEND_BLOCK
+      else
+        <<-END_MAKEDEPEND_BLOCK
+# Not tracking dependencies 
+task :depends
+        END_MAKEDEPEND_BLOCK
+      end
+    end
+
     def rakefile_contents # :nodoc:
       objext = CONFIG['OBJEXT']
 
@@ -182,12 +220,15 @@ module Mkrf
 #  DO NOT EDIT, contents may be replaced without warning 
 #
 require 'rake/clean'
+#{ makedepends? ? 'require "rake/loaders/makefile"' : "" }
 
 CLEAN.include('*.#{objext}')
 CLOBBER.include('#{@extension_name}', 'mkrf.log')
 
 SRC = FileList[#{sources.join(',')}]
 OBJ = SRC.ext('#{objext}')
+DEPS = SRC.ext('#{@depext}')
+
 CC = 'gcc'
 CPP = 'g++'
 
@@ -219,11 +260,13 @@ rule '.#{objext}' => '.cpp' do |t|
 end
 
 desc "Build this extension"
-file '#{@extension_name}' => :obj do
+file '#{@extension_name}' => [:depends, :obj] do
   sh "\#{LDSHARED} \#{LIBPATH} #{@available.ld_outfile(@extension_name)} \#{OBJ} \#{ADDITIONAL_OBJECTS} \#{LIBS} \#{LIBRUBYARG_SHARED}"
 end
 
 #{parallelize ? 'multitask' : 'task'} :obj => OBJ
+
+#{makedepend_block}
 
 desc "Rebuild rakefile"
 file 'Rakefile' => 'mkrf_conf.rb' do |t|
