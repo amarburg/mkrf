@@ -61,13 +61,17 @@ module Mkrf
     # (which is used to build the shared library).
     attr_accessor :ldshared
 
-    # Should the object files be built using multitask
-    attr_accessor :parallelize
+    attr_accessor :parallelize # :nodoc:
+
+    # Try to run the object generation phase in parallel
+    # (as a Rake multitask).
     def parallelize!; @parallelize = true; end
 
-    attr_accessor :makedepends
-    def makedepends!; @makedepends = true; end
+    attr_accessor :makedepends # :nodoc:
     alias_method :makedepends?, :makedepends
+
+    # Use the compiler to generate dependency tracking files
+    def makedepends!; @makedepends = true; end
     
     # Create a +Generator+ object which writes a Rakefile to the current directory of the local
     # filesystem.
@@ -189,12 +193,12 @@ includes_from_cflags = CFLAGS.split(' ').select {|s| s.match(/^-I/) }.join(' ')
 mkdep_includes = [INCLUDES, includes_from_cflags].join(' ')
 
 rule '#{@depext}' => '.cpp' do |t|
-  sh "gcc \#{mkdep_includes} -MM -MF \#{t.name} \#{t.source}"
+  sh "\#{CPP} \#{mkdep_includes} -MM -MF \#{t.name} \#{t.source}"
   Rake::MakefileLoader.new.load(t.name) if File.file?(t.name)
 end
 
 rule '#{@depext}' => '.c' do |t|
-  sh "gcc \#{mkdep_includes} -MM -MF \#{t.name} \#{t.source}"
+  sh "\#{CC} \#{mkdep_includes} -MM -MF \#{t.name} \#{t.source}"
   Rake::MakefileLoader.new.load(t.name) if File.file?(t.name)
 end
 
